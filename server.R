@@ -45,21 +45,23 @@ shinyServer(function(input, output){
   # and popup weather LABEL for all five cities
    
     output$city_bike_map <- renderLeaflet({
-      leaflet("city_bike_map") %>%
+      leaflet(cities_max_bike) %>%
       addTiles() %>%
       addCircleMarkers(lng = cities_max_bike$LNG,
                        lat = cities_max_bike$LAT,
                        radius= ~ifelse(cities_max_bike$BIKE_PREDICTION_LEVEL=='small', 6, 12),
                        color = ~color_levels(cities_max_bike$BIKE_PREDICTION_LEVEL),
-                       label = paste("City", cities_max_bike$LABEL))})}
+                       popup = ~cities_max_bike(cities_max_bike$LABEL))})}
   # If just one specific city was selected, then render a leaflet map with one marker
   # on the map and a popup with DETAILED_LABEL displayed
                  else {renderLeaflet({
-                     leaflet("city_bike_map") %>%
+                     leafletProxy(cities_max_bike) %>%
+                     clearShapes() %>%
+                     clearMarkers()%>%
                      addTiles() %>%
                      addMarkers(lng = cities_max_bike$LNG,
                                 lat = cities_max_bike$LAT,
-                                label = paste("City", cities_max_bike$DETAILED_LABEL))})}
+                                popup = ~cities_max_bike(cities_max_bike$LABEL))})}
   })
 
 })
